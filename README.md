@@ -19,14 +19,16 @@ Dell sold its software assets to a consortium of VC firms, who rebranded the com
 #### One Identity Authentication Services
 (New) Quest has spun off the security and identity products and formed a new company, One Identity
 
+#### Aliases
+The product hasn't changed beyond customer feature enhancements and bug fixes, yet it has been known by many names:
 * Vintela
-* VAS
+ * VAS
 * Quest Authentication Services
-* QAS
+ * QAS
 * Dell Authentication Services
-* VAS
+ * VAS
 * One Identity Authentication Services
-* VAS
+ * VAS
 
 ## Useful VAS Commands
 #### VAS and AD info
@@ -58,7 +60,7 @@ vastool -u host/ attrs unixadm member
 vastool -u host/ nss getgrnam unixadm
 vastool group admins hasmember jsmith
 # List only group names
-sudo vastool -u host/ attrs unix-scpo-servers member|cut -f2 -d:|cut -f1 -d,|cut -f1 -d-|cut -f2 -d=
+sudo vastool -u host/ attrs unix-AD-group member|cut -f2 -d:|cut -f1 -d,|cut -f1 -d-|cut -f2 -d=
 
 # vastool info
 vastool info acl
