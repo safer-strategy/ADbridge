@@ -70,4 +70,14 @@ vastool info domain
 vastool info domain-dn
 vastool info id -u mike
 vastool info servers -d strategic.ad
+
+# To check the time required for a user to complete VAS authentication, try running the below command (replace values in "<>"):
+
+echo <VAS User password> | time /opt/quest/libexec/vas/vasauth_helper --user=<VAS User> --debug-stderr --auth-ad-get-tgt --auth-ad-store-user-ccache auth
+
+# The following examples show how to check if jdoe is a member of the admins group, and how to authenticate the jdoe user to the web/ service:
+
+vastool -u jdoe auth member admins
+vastool -u jdoe auth -S web/
+
 ```
