@@ -102,15 +102,15 @@ yesorno () {
 }
 
 pull_AD(){
-# Pull Unix enabled users from AD
-/opt/quest/libexec/oat/oat_adlookup $VAScreds -o $ADusers user
-/opt/quest/libexec/oat/oat_adlookup $VAScreds -o $ADgroups group
+  # Pull Unix enabled users from AD
+  /opt/quest/libexec/oat/oat_adlookup $VAScreds -o $ADusers user
+  /opt/quest/libexec/oat/oat_adlookup $VAScreds -o $ADgroups group
 }
 
 match_oat(){
-# Match against entries in the /etc/passwd, utilize usermap.
-/opt/quest/libexec/oat/oat_match -m $Usermap -a $ADusers -x $Passwd user > $OATmatchedUsers
-/opt/quest/libexec/oat/oat_match -a $ADgroups -x $Group group > $OATmatchGroups
+  # Match against entries in the /etc/passwd, utilize usermap.
+  /opt/quest/libexec/oat/oat_match -m $Usermap -a $ADusers -x $Passwd user > $OATmatchedUsers
+  /opt/quest/libexec/oat/oat_match -a $ADgroups -x $Group group > $OATmatchGroups
 }
 
 matched_User_Groups(){
@@ -119,20 +119,20 @@ matched_User_Groups(){
 }
 
 test_oat(){
-# Run OAT in Test mode
-/opt/quest/libexec/oat/oat_changeowner -r -t process -b $OATBACKUP -u $OATmatchedUsers -d $PROCDIR
-echo "The following OAT map file was processed in Test mode:"
-echo "localUID(local_username) ADuid(ADaccount)"
-cat $OATmatchedUsers
-echo "Processing Groups"
-/opt/quest/libexec/oat/oat_changeowner -r -t process -b $OATBACKUP -g $OATmatchGroups -d $PROCDIR
-echo "================="
-cat $OATmatchGroups
-if yesorno "Show Files to be processed?" yes; then
-  less $OATBACKUP/testmode-changes_made_during_process
-fi
-echo "If everything looked sane, go ahead and commit."
-echo "$myname commit"
+  # Run OAT in Test mode
+  /opt/quest/libexec/oat/oat_changeowner -r -t process -b $OATBACKUP -u $OATmatchedUsers -d $PROCDIR
+  echo "The following OAT map file was processed in Test mode:"
+  echo "localUID(local_username) ADuid(ADaccount)"
+  cat $OATmatchedUsers
+  echo "Processing Groups"
+  /opt/quest/libexec/oat/oat_changeowner -r -t process -b $OATBACKUP -g $OATmatchGroups -d $PROCDIR
+  echo "================="
+  cat $OATmatchGroups
+  if yesorno "Show Files to be processed?" yes; then
+    less $OATBACKUP/testmode-changes_made_during_process
+  fi
+  echo "If everything looked sane, go ahead and commit."
+  echo "$myname commit"
 }
 
 commit_oat(){
@@ -151,48 +151,48 @@ commit_oat(){
 }
 
 rollback_oat(){
-# Run OAT in rollback mode
-# This mode will put everything back how it was found originally by OAT
-/opt/quest/libexec/oat/oat_changeowner -r -p rollback -b $OATBACKUP
-# Rollback homedir
-sh -x $HomeRollback
-# Rollback Purged GroupsPurged
-cat $GroupsPurged >> $Group
+  # Run OAT in rollback mode
+  # This mode will put everything back how it was found originally by OAT
+  /opt/quest/libexec/oat/oat_changeowner -r -p rollback -b $OATBACKUP
+  # Rollback homedir
+  sh -x $HomeRollback
+  # Rollback Purged GroupsPurged
+  cat $GroupsPurged >> $Group
 }
 
 purge_group(){
   # Remove User entries if they exist in /etc/group
-if [ -f "$GroupsPurged" ]; then
-  mv $GroupsPurged $GroupsPurged.$Epoch
-fi
+  if [ -f "$GroupsPurged" ]; then
+    mv $GroupsPurged $GroupsPurged.$Epoch
+  fi
 
-if [ -f "$OATmatchedUsers" ]; then
-  for User in `cat $OATmatchedUsers |awk '{print $1}'|awk -F\( '{print $2}'|sed 's/.$//'`; do
-    if grep -q ^$User $Group; then
-      grep ^$User $Group >> $GroupsPurged
-      sed -i "/^$User/d" $Group
-    fi
-  done
-fi
+  if [ -f "$OATmatchedUsers" ]; then
+    for User in `cat $OATmatchedUsers |awk '{print $1}'|awk -F\( '{print $2}'|sed 's/.$//'`; do
+      if grep -q ^$User $Group; then
+        grep ^$User $Group >> $GroupsPurged
+        sed -i "/^$User/d" $Group
+      fi
+    done
+  fi
 }
 
 purge_group_test(){
   # Remove User entries if they exist in /etc/group
-if [ -f "$GroupsPurged" ]; then
-  mv $GroupsPurged $GroupsPurged.$Epoch
-fi
+  if [ -f "$GroupsPurged" ]; then
+    mv $GroupsPurged $GroupsPurged.$Epoch
+  fi
 
-if [ -f "$OATmatchedUsers" ]; then
-  for User in `cat $OATmatchedUsers |awk '{print $1}'|awk -F\( '{print $2}'|sed 's/.$//'`; do
-    if grep -q ^$User $Group; then
-      grep ^$User $Group >> $GroupsPurged
-      # sed -i "/^$User/d" $Group
-    fi
-  done
-fi
+  if [ -f "$OATmatchedUsers" ]; then
+    for User in `cat $OATmatchedUsers |awk '{print $1}'|awk -F\( '{print $2}'|sed 's/.$//'`; do
+      if grep -q ^$User $Group; then
+        grep ^$User $Group >> $GroupsPurged
+        # sed -i "/^$User/d" $Group
+      fi
+    done
+  fi
 
-echo "The following groups would be purged from system."
-cat $GroupsPurged
+  echo "The following groups would be purged from system."
+  cat $GroupsPurged
 }
 
 mod_Homedir(){
